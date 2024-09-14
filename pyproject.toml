@@ -1,0 +1,24 @@
+[build-system]
+requires=["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name="ssfconv"
+version="1.0.6"
+authors=[
+{name="VOID001"},
+{name="fkxxyz"},
+{name="RadND"}
+]
+description="Sogou input method skin file (.ssf file) converter"
+readme="README.md"
+requires-python=">=3.10"
+dependencies= [
+    "pycryptodome",
+    "pillow",
+    "numpy"
+]
+[project.scripts]
+ssfconv="ssfconv.cli:conv"
+ssfunpack="ssfconv.cli:unpackage"
