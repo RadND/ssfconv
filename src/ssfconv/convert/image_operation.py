@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 import numpy as np
+import logging
 
 
 def getImageAvg(image_path, area=(0, 0, 0, 0)):
@@ -13,74 +14,79 @@ def getImageAvg(image_path, area=(0, 0, 0, 0)):
     返回 (r,g,b) 三元组
     """
 
-    file = Image.open(image_path)
-    size = file.size
+    with Image.open(image_path) as file:
+        size = file.size
 
-    # 确定区域
-    x1 = area[0] % size[0]
-    x2 = area[1] % size[0]
-    y1 = area[2] % size[1]
-    y2 = area[3] % size[1]
-    if x2 == 0:
-        x2 = size[0]
-    if y2 == 0:
-        y2 = size[1]
+        # 确定区域
+        x1 = area[0] % size[0]
+        x2 = area[1] % size[0]
+        y1 = area[2] % size[1]
+        y2 = area[3] % size[1]
+        if x2 == 0:
+            x2 = size[0]
+        if y2 == 0:
+            y2 = size[1]
 
-    if x1 > x2:
-        t = x1
-        x1 = x2
-        x2 = t
-    if y1 > y2:
-        t = y1
-        y1 = y2
-        y2 = t
-    if x1 == x2:
-        if x2 != size[0]:
-            x2 += 1
+        if x1 > x2:
+            t = x1
+            x1 = x2
+            x2 = t
+        if y1 > y2:
+            t = y1
+            y1 = y2
+            y2 = t
+        if x1 == x2:
+            if x2 != size[0]:
+                x2 += 1
+            else:
+                x1 -= 1
+        if y1 == y2:
+            if y2 != size[1]:
+                y2 += 1
+            else:
+                y1 -= 1
+
+        # 算出区域内所有像素点的平均值
+        img = np.asarray(file)
+        r = g = b = 0
+        count = 0
+
+        # 有没有透明度？
+        if img.shape[2] == 4:
+            for y in range(y1, y2):
+                for x in range(x1, x2):
+                    if img[y][x][3] > 0:
+                        r += img[y][x][0]
+                        g += img[y][x][1]
+                        b += img[y][x][2]
+                        count += 1
         else:
-            x1 -= 1
-    if y1 == y2:
-        if y2 != size[1]:
-            y2 += 1
-        else:
-            y1 -= 1
-
-    # 算出区域内所有像素点的平均值
-    img = np.asarray(file)
-    r = g = b = 0
-    count = 0
-    """
-    NOTE https://github.com/fkxxyz/ssfconv/issues/20
-    此处会溢出，不影响最终结果，问题不大
-    """
-    if img.shape[2] == 4:
-        for y in range(y1, y2):
-            for x in range(x1, x2):
-                if img[y][x][3] > 0:
+            for y in range(y1, y2):
+                for x in range(x1, x2):
                     r += img[y][x][0]
                     g += img[y][x][1]
                     b += img[y][x][2]
                     count += 1
-    else:
-        for y in range(y1, y2):
-            for x in range(x1, x2):
-                r += img[y][x][0]
-                g += img[y][x][1]
-                b += img[y][x][2]
-                count += 1
-    if count == 0:
-        count = 1
-    r //= count
-    g //= count
-    b //= count
-    return (r, g, b)
+        
+        if count == 0:
+            count = 1
+        #https://github.com/fkxxyz/ssfconv/issues/20
+        r=int(r)
+        g=int(g)
+        b=int(b)
+
+        r //= count
+        g //= count
+        b //= count
+        return (r, g, b)
 
 
 # 获取图片大小的函数
 def getImageSize(image_file):
-    size = Image.open(image_file).size
-    assert size[0] > 0 and size[0] < 65536 and size[1] > 0 and size[1] < 65536
-    return size
+    with Image.open(image_file) as file:
+        size = file.size
+        assert size[0] > 0 and size[0] < 65536 and size[1] > 0 and size[1] < 65536
+        return size
 
 
 # 保存一个多边形到文件

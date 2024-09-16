@@ -13,8 +13,8 @@ def conv():
     #     "dest", help="输出文件夹，默认与输入文件夹相同", nargs="?", default=None
     # )
     parser.add_argument(
-        "--type",
         "-t",
+        "--type",
         help="输出文件（夹）格式，默认 fcitx5",
         default="fcitx5",
         choices=["fcitx", "fcitx5"],
@@ -22,6 +22,12 @@ def conv():
     # parser.add_argument(
     #     "-f", "--force", help="强制覆盖输出文件夹的内容", action="store_true"
     # )
+    parser.add_argument(
+        "-i",
+        "--install",
+        help="将转换结果移动到该格式皮肤的默认位置",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.src):
@@ -51,8 +57,8 @@ def unpackage():
         "dest", help="输出文件夹名，默认与皮肤文件名相同", nargs="?", default=None
     )
     parser.add_argument(
-        "--type",
         "-t",
+        "--type",
         help="要解压的皮肤格式，默认 ssf",
         default="ssf",
         choices=["ssf"],
