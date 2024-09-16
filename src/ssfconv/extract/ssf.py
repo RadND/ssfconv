@@ -4,6 +4,8 @@ import struct
 import zipfile
 import os
 
+# 这部分最早可以追溯到 https://github.com/KDE/kimtoy/blob/master/kssf.cpp
+
 def extract_ssf(file_path, dest_dir):
     """
         解压ssf文件到指定文件夹，文件夹不存在会自动创建

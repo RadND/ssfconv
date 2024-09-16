@@ -20,7 +20,7 @@ clone或下载release
 
 ```shell
 python -m venv venv_name
-source venv_name/bin/activate  
+source venv_name/bin/activate
 pip install .
 ```
 
@@ -122,3 +122,12 @@ grep Name ~/.local/share/fcitx5/themes/【雨欣】蒲公英的思念/theme.conf
 ## 更多整理
 
 转换部分的主函数仍然非常长，需要拆分，有部分固定的配置可以抽离出来以模板文件的形式存在
+
+## IBus
+
+```
+GNOME桌面和非GNOME桌面的IBus采用了两个不同的前端。非GNOME桌面的IBus是项目自己本身基于GTK写的一个很简陋的前端，其使用GTK主题，根据我之前的研究，要实现搜狗那样的皮肤效果应该不太可能。GNOME在他们的GJS代码库里给IBus重写了一个前端，他们的前端可定制性更强，主要是使用CSS文件指定样式
+@HollowMan6
+```
+
+仅靠转换程序做不到在 IBus 上实现搜狗这种美观的皮肤效果，看样子最有希望的办法是通过 GNOME Shell 扩展修改输入法前端，先行提供背景图片等素材的显示和拉伸/压缩的能力
