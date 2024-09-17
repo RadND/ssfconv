@@ -2,8 +2,8 @@
 # -*- encoding:utf-8 -*-
 import argparse
 import os, sys, shutil
-from ssfconv.extract.ssf import extract_ssf
-from ssfconv.convert import convert
+from .extract.ssf import extract_ssf
+from .convert import convert
 
 
 def conv():

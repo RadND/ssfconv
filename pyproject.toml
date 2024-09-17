@@ -1,25 +1,35 @@
 [build-system]
-requires=["setuptools>=61.0"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
-name="ssfconv"
-version="1.0.7"
-authors=[
-{name="nihui"},
-{name="VOID001"},
-{name="fkxxyz"},
-{name="RadND"}
+name = "ssfconv"
+version = "1.1.1"
+dependencies = ["pycryptodome", "pillow", "numpy"]
+requires-python = ">=3.10"
+authors = [
+    { name = "nihui" },
+    { name = "VOID001" },
+    { name = "fkxxyz" },
+    { name = "RadND" },
 ]
-description="Sogou input method skin file (.ssf file) converter"
-readme="README.md"
-requires-python=">=3.10"
-dependencies= [
-    "pycryptodome",
-    "pillow",
-    "numpy"
+description = "Sogou input method skin file (.ssf file) converter"
+readme = "README.md"
+keywords = ["ssf", "fcitx", "fcitx5", "Fcitx5 Classic User interface"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: Chinese (Simplified)",
+    "Topic :: Adaptive Technologies",
 ]
+
+[project.urls]
+Repository = "https://github.com/radnd/ssfconv.git"
+Issues = "https://github.com/radnd/ssfconv/issues"
+
 [project.scripts]
-ssfconv="ssfconv.cli:conv"
-ssfunpack="ssfconv.cli:unpackage"
+ssfconv = "ssfconv.cli:conv"
+ssfunpack = "ssfconv.cli:unpackage"

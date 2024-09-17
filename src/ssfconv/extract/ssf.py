@@ -1,8 +1,6 @@
 from Crypto.Cipher import AES
-import zlib
-import struct
+import zlib, struct, os
 import zipfile
-import os
 
 # 这部分最早可以追溯到 https://github.com/KDE/kimtoy/blob/master/kssf.cpp
 

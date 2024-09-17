@@ -1,7 +1,7 @@
-from ssfconv.convert.CaseSensitiveConfigParser import CaseSensitiveConfigParser
+from ..CaseSensitiveConfigParser import CaseSensitiveConfigParser
 
-from ssfconv.convert.image_operation import *
-from ssfconv.convert.ini_ssf_operation import *
+from ..image_operation import *
+from ..ini_ssf_operation import *
 
 # 创建符号链接的函数（若存在则覆盖）
 def symlinkF(src, dst):

@@ -1,5 +1,5 @@
-from ssfconv.convert.image_operation import *
-from ssfconv.convert.ini_ssf_operation import *
+from ..image_operation import *
+from ..ini_ssf_operation import *
 
 def makeConfFromSsf(ssf):
     skin = CaseSensitiveConfigParser(allow_no_value = True)
