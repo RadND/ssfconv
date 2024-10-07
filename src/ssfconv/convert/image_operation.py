@@ -52,7 +52,9 @@ def getImageAvg(image_path, area=(0, 0, 0, 0)):
         count = 0
 
         # 有没有透明度？
-        if img.shape[2] == 4:
+        if not len(img.shape) >= 3:
+            pass
+        elif img.shape[2] == 4:
             for y in range(y1, y2):
                 for x in range(x1, x2):
                     if img[y][x][3] > 0:
