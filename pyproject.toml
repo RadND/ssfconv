@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssfconv"
-version = "1.1.1"
-dependencies = ["pycryptodome", "pillow", "numpy"]
+version = "1.2.0"
+dependencies = ["pycryptodomex", "pillow", "numpy"]
 requires-python = ">=3.10"
 authors = [
     { name = "nihui" },
@@ -31,5 +31,4 @@ Repository = "https://github.com/radnd/ssfconv.git"
 Issues = "https://github.com/radnd/ssfconv/issues"
 
 [project.scripts]
-ssfconv = "ssfconv.cli:conv"
-ssfunpack = "ssfconv.cli:unpackage"
+ssfconv = "ssfconv.cli:main"

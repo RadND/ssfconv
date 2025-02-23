@@ -43,7 +43,7 @@ pip install ssfconv
 ## 解包 ssf 皮肤
 
 ```shell
-ssfunpack 【雨欣】蒲公英的思念.ssf
+ssfconv unpack 【雨欣】蒲公英的思念.ssf
 ```
 
 得到的文件夹可供 `ssfconv` 使用
@@ -51,7 +51,7 @@ ssfunpack 【雨欣】蒲公英的思念.ssf
 ## 转换为 fcitx 皮肤
 
 ```shell
-ssfconv -t fcitx 【雨欣】蒲公英的思念
+ssfconv convert -t fcitx 【雨欣】蒲公英的思念
 ```
 
 复制到用户皮肤目录
@@ -66,7 +66,7 @@ cp -r 【雨欣】蒲公英的思念  ~/.config/fcitx/skin/
 ## 转换为 fcitx5 主题
 
 ```shell
-ssfconv 【雨欣】蒲公英的思念
+ssfconv convert 【雨欣】蒲公英的思念
 ```
 
 复制到用户主题目录
