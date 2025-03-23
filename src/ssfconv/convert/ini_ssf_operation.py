@@ -1,7 +1,7 @@
 from .CaseSensitiveConfigParser import CaseSensitiveConfigParser
-
+from .image_operation import *
 import io
-import os
+from pathlib import Path
 import sys
 
 
@@ -14,17 +14,17 @@ default_radio_img_bin = io.BytesIO(
 
 
 class SsfIniWrapper:
-    def __init__(self, skin_dir):
+    def __init__(self, skin_dir: Path):
         self.ssf = None
-        self.skin_dir = skin_dir.rstrip(os.sep)
+        self.skin_dir = skin_dir
         self.read_ssf_ini()
 
     def read_ssf_ini(self):
         """
-        读取 ssf 皮肤的 skin.ini
+        为了重复使用，不和init合并
         """
-        skin_ini = self.skin_dir + os.sep + "skin.ini"
-        if not os.path.isfile(skin_ini):
+        skin_ini = self.skin_dir / "skin.ini"
+        if not skin_ini.is_file():
             sys.stderr.write("找不到 skin.ini\n")
             return 1
 
@@ -41,25 +41,69 @@ class SsfIniWrapper:
         """
         获取图片文件名的函数（获取失败则返回空字符串）
         """
-        if key in self.ssf[section]:
-            image_name_list = self.ssf[section][key].split(",")
-            if index < len(image_name_list):
-                image_name = image_name_list[index]
-                if os.path.isfile(self.skin_dir + os.sep + image_name):
-                    return image_name
-        return ""
+        image_name_list = self.ssf[section].get(key, "").split(",")
+        if index < len(image_name_list):
+            image_name = image_name_list[index]
+            if (self.skin_dir / image_name).is_file():
+                return image_name
+        else:
+            return ""
 
     def try_get_value(self, section, key):
-        """
-        尝试获取值的函数
-        """
-        if key in self.ssf[section]:
-            return self.ssf[section][key].strip()
-        return ""
+        return self.ssf[section].get(key, "").strip()
 
     def getRawIni(self):
-        # FIXME 直接调用这个是坏主意，考虑使用私有变量或私有方法来暗示
+        # FIXME 允许写这个变量是坏主意，考虑使用私有变量或私有方法来暗示
         return self.ssf
+
+    def findBackgroundColorBy(self, key):
+        # 排除键值不存在
+        image_name = self.get_image_config(key[0], key[1])
+        if not image_name:
+            return None
+
+        # 排除区域不存在
+        h_str = self.try_get_value(key[0], key[1][:-3] + "layout_horizontal")
+        if not h_str:
+            return None
+        v_str = self.try_get_value(key[0], key[1][:-3] + "layout_vertical")
+        if not v_str:
+            return None
+
+        # 得出区域
+        h = h_str.split(",")
+        v = v_str.split(",")
+        if len(h) != 3 or len(v) != 3:
+            return None
+
+        # 排除平铺模式（筛选出是拉伸区域）
+        # if int(h[0]) != 0 or int(v[0]) != 0:
+        #    return None
+
+        return getImageAvg(
+            self.skin_dir / image_name,
+            (int(h[1]), -int(h[2]), int(v[1]), -int(v[2])),
+        )
+
+    def findBackgroundColor(self):
+        """
+        根据里面所有的图片，根据所设置的拉伸区域确定合适的背景色
+        不知道原作者为什么按顺序取到任意一张就完成
+        """
+        keys = (
+            ("Scheme_V1", "pic"),
+            ("Scheme_V2", "pinyin_pic"),
+            ("Scheme_V2", "zhongwen_pic"),
+            ("Scheme_H1", "pic"),
+            ("Scheme_H2", "pinyin_pic"),
+            ("Scheme_H2", "zhongwen_pic"),
+        )
+        for key in keys:
+            avg_color = self.findBackgroundColorBy(key)
+            if avg_color:
+                return avg_color
+        else:
+            return (0, 0, 0)
 
 
 # 将 skin.ini 的颜色转换成 (r,g,b) 三元组

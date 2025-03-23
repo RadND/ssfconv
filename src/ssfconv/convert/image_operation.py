@@ -1,9 +1,10 @@
 from PIL import Image, ImageDraw
 import numpy as np
 import logging
+from pathlib import Path
 
 
-def getImageAvg(image_path, area=(0, 0, 0, 0)):
+def getImageAvg(image_path:Path, area=(0, 0, 0, 0)):
     """
     获取图片的像素平均值
         image_path 图片的路径
@@ -52,7 +53,7 @@ def getImageAvg(image_path, area=(0, 0, 0, 0)):
         count = 0
 
         # 有没有透明度？
-        if not len(img.shape) >= 3:
+        if len(img.shape) < 3:
             pass
         elif img.shape[2] == 4:
             for y in range(y1, y2):
@@ -69,13 +70,13 @@ def getImageAvg(image_path, area=(0, 0, 0, 0)):
                     g += img[y][x][1]
                     b += img[y][x][2]
                     count += 1
-        
+
         if count == 0:
             count = 1
-        #https://github.com/fkxxyz/ssfconv/issues/20
-        r=int(r)
-        g=int(g)
-        b=int(b)
+        # https://github.com/fkxxyz/ssfconv/issues/20
+        r = int(r)
+        g = int(g)
+        b = int(b)
 
         r //= count
         g //= count
@@ -84,7 +85,7 @@ def getImageAvg(image_path, area=(0, 0, 0, 0)):
 
 
 # 获取图片大小的函数
-def getImageSize(image_file):
+def getImageSize(image_file:str):
     with Image.open(image_file) as file:
         size = file.size
         assert size[0] > 0 and size[0] < 65536 and size[1] > 0 and size[1] < 65536
@@ -92,7 +93,7 @@ def getImageSize(image_file):
 
 
 # 保存一个多边形到文件
-def savePolygon(size, points, color, out_file):
+def savePolygon(size, points, color, out_file:str):
     img = Image.new("RGBA", size)
     draw = ImageDraw.Draw(img)
     draw.polygon(points, fill=color)

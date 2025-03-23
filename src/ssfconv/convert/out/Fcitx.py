@@ -1,7 +1,8 @@
-from ..CaseSensitiveConfigParser import CaseSensitiveConfigParser
-
 from ..image_operation import *
 from ..ini_ssf_operation import *
+
+#TODO 用pathlib 替换
+import os
 
 # 创建符号链接的函数（若存在则覆盖）
 def symlinkF(src, dst):
@@ -28,52 +29,16 @@ def makeConfFromSsf(ssf):
     return skin
 
 
-def ssf2fcitx(skin_dir):
+def ssf2fcitx(skin_dir:str):
     """
         转换为 fcitx 格式
         将解压后的 ssf 皮肤，在里面创建出 fcitx_skin.conf
     """
     
-    ssfw = SsfIniWrapper(skin_dir)
+    ssfw = SsfIniWrapper(Path(skin_dir))
     ssf=ssfw.getRawIni() 
 
     skin=makeConfFromSsf(ssf)
-
-    # 根据里面所有的图片，根据所设置的拉伸区域确定合适的背景色
-    def findBackgroundColor():
-        for key in (('Scheme_V1','pic'),
-                    ('Scheme_V2','pinyin_pic'),
-                    ('Scheme_V2','zhongwen_pic'),
-                    ('Scheme_H1','pic'),
-                    ('Scheme_H2','pinyin_pic'),
-                    ('Scheme_H2','zhongwen_pic'),
-                    ):
-            # 排除不存在的键值
-            image_name = ssfw.get_image_config(key[0], key[1])
-            if not image_name : continue
-
-            # 排除区域不存在
-            h_str = ssfw.try_get_value(key[0], key[1][:-3] + 'layout_horizontal')
-            if not h_str : continue
-            v_str = ssfw.try_get_value(key[0], key[1][:-3] + 'layout_vertical')
-            if not v_str : continue
-
-            # 得出区域
-            h = h_str.split(',')
-            v = v_str.split(',')
-            if len(h) != 3 or len(v) != 3: continue
-
-            # 排除平铺模式（筛选出是拉伸区域）
-            #if int(h[0]) != 0 or int(v[0]) != 0:
-            #    continue
-
-            return getImageAvg(skin_dir + os.sep + image_name,
-                        (int(h[1]),
-                         -int(h[2]),
-                         int(v[1]),
-                         -int(v[2])))
-        else:
-            return (0, 0, 0)
 
     # 输入框输入的拼音颜色
     input_color = colorConv(ssf['Display']['pinyin_color'])
@@ -85,7 +50,7 @@ def ssf2fcitx(skin_dir):
     other_color = colorConv(ssf['Display']['zhongwen_color'])
 
     # 根据里面所有的图片，根据所设置的拉伸区域确定合适的背景色
-    back_color = findBackgroundColor()
+    back_color = ssfw.findBackgroundColor()
 
     # 字体大小（像素）
     font_size = int(ssf['Display']['font_size'])
@@ -124,7 +89,7 @@ def ssf2fcitx(skin_dir):
     # 求图标的前景色（任意一个即可）
     for image in icons:
         if image:
-            icon_color = getImageAvg(skin_dir + os.sep + image)
+            icon_color = getImageAvg(Path(skin_dir) / image)
             break
     else:
         icon_color = other_color
