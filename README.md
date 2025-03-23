@@ -9,7 +9,7 @@
 1. 制成 python 包，用户不需要自己装依赖了
 2. 重构，减少重复，将原先的脚本拆分为解包和转换两部分
 3. 注册命令行程序、调整命令行参数、中文本地化
-4. 由于使用了match case语法，python版本要求上升到3.10，如果想用旧版本python运行，请自行把相关代码改回长串 if elif （但这一切值得吗.jpg）
+4. 由于使用了match case语法，python版本要求上升到3.10，如果想用旧版本python运行，请自行把相关代码改回长串 if elif
 
 程序的目的没有变，所以原作者的[参考图像](https://www.fkxxyz.com/d/ssfconv)依然适用
 
@@ -21,12 +21,13 @@ clone或下载release
 ```shell
 python -m venv venv_name
 source venv_name/bin/activate
+# source venv_name/bin/activate.fish
 pip install .
 ```
 
 ## pip
 
-[ ] 上传到 pypi
+[ ] 下次一定上传到 pypi
 
 ```shell
 pip install ssfconv
@@ -38,7 +39,7 @@ pip install ssfconv
 
 ## 获取皮肤
 
-可以从[搜狗的皮肤站](https://pinyin.sogou.com/skins/)下载自己喜欢的皮肤，得到ssf格式的文件，例如 【雨欣】蒲公英的思念.ssf
+可以从[搜狗的皮肤站](https://pinyin.sogou.com/skins/)或bilibili搜索输入法皮肤获取自己喜欢的皮肤，得到ssf格式的文件，例如 【雨欣】蒲公英的思念.ssf
 
 ## 解包 ssf 皮肤
 
@@ -48,7 +49,7 @@ ssfconv unpack 【雨欣】蒲公英的思念.ssf
 
 得到的文件夹可供 `ssfconv` 使用
 
-## 转换为 fcitx 皮肤
+## 转换为 fcitx4 皮肤
 
 ```shell
 ssfconv convert -t fcitx 【雨欣】蒲公英的思念
@@ -90,18 +91,6 @@ grep Name ~/.local/share/fcitx5/themes/【雨欣】蒲公英的思念/theme.conf
 
 转换得到的皮肤配置或多或少会有点瑕疵，其实调整它们并不困难，快去试试吧
 
-# 已知缺陷
-
-## fcitx5
-
-- fcitx5 能够完美地像搜狗输入法一样调整，但是主题中所设置的字体是无效的，需要手动设置字体，经过 fkxxyz 反复实验，将字体设置为 "Sans 10" 似乎是大多数皮肤的最佳体验。
-- 菜单字体颜色无法通过主题调整，只能为黑色高亮白色，所以在背景比较黑或者比较白的皮肤下，菜单可能体验不理想。
-- 可能有皮肤转换效果不太好，欢迎提出 pr 改进。
-
-## fcitx
-
-- 因为 fcitx 的限制，输入框里只能对文字的外边距进行设置，无法像搜狗输入法一样任意调整坐标，导致部分皮肤只能在图片拉升和文件位置靠右来二选一的取舍。不过大多数皮肤都能挺不错的转换，只有少数皮肤实在是没办法了，只好用图片拉升代替（VOID001 是将文字调整到靠右，留了很多空白）。
-
 # 致谢
 
 前两位作者的仓库分别在
@@ -131,3 +120,5 @@ GNOME桌面和非GNOME桌面的IBus采用了两个不同的前端。非GNOME桌�
 ```
 
 仅靠转换程序做不到在 IBus 上实现搜狗这种美观的皮肤效果，看样子最有希望的办法是通过 GNOME Shell 扩展修改输入法前端，先行提供背景图片等素材的显示和拉伸/压缩的能力
+
+readme有点长，其他不重要的内容看 [Wiki 页面](https://github.com/RadND/ssfconv/wiki)
