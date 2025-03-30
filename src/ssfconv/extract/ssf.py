@@ -1,10 +1,11 @@
 from Cryptodome.Cipher import AES
-import zlib, struct, os
+import zlib, struct
+from pathlib import Path
 import zipfile
 
 # 这部分最早可以追溯到 https://github.com/KDE/kimtoy/blob/master/kssf.cpp
 
-def extract_ssf(file_path, dest_dir):
+def extract_ssf(file_path:Path, dest_dir:Path):
     """
         解压ssf文件到指定文件夹，文件夹不存在会自动创建
         ssf 文件格式目前有两种，一种是加密过后，一种未加密的zip
@@ -40,12 +41,12 @@ def extract_ssf(file_path, dest_dir):
             # 得到文件内容
             content_len = readUint(offset+4+name_len)
             content = data[offset+8+name_len:offset+8+name_len+content_len]
-            # 写入文件
-            open(dest_dir.rstrip(os.sep)+os.sep+filename, 'wb').write(content)
+            
+            (dest_dir / filename).write_bytes(content)
 
         return
-    
-    ssf_bin = open(file_path, 'rb').read()
+
+    ssf_bin = file_path.read_bytes()
 
     if ssf_bin[:4] == b'Skin': # 通过头四字节判断是否被加密
         __decrypt(ssf_bin)

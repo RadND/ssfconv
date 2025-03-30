@@ -1,40 +1,34 @@
-#!/usr/bin/env python3
-# -*- encoding:utf-8 -*-
+import sys, shutil
+from pathlib import Path
+from .translation import _
 import argparse
-import os, sys, shutil
 from .extract.ssf import extract_ssf
 from .convert import convert
 
 
-def package(args):
-    assert False
-    if args.zip:
-        file_list = os.listdir(skin_dir)
-        with zipfile.ZipFile(args.dest, "w") as zf:
-            for file in file_list:
-                zf.write(skin_dir + os.sep + file, file)
-        shutil.rmtree(tmp_dir)
-        err = 0
-    return
-
-
 def add_parser_unpack(subparsers: argparse._SubParsersAction):
-    parser = subparsers.add_parser("unpack", help="皮肤文件解压")
-    parser.add_argument("src", help="皮肤文件名")
+    parser = subparsers.add_parser("unpack", help=_("Unpack skin"))
+    parser.add_argument("src", type=Path, help=_("Skin file"))
     parser.add_argument(
-        "dest", help="输出文件夹名，默认与皮肤文件名相同", nargs="?", default=None
+        "dest",
+        type=Path,
+        help=_("Output folder name, default is same as Skin file name"),
+        nargs="?",
+        default=None,
     )
     parser.add_argument(
         "-t",
         "--type",
-        help="要解压的皮肤格式，默认 ssf",
+        help=_(
+            "Format of skin to be unpack",
+        ),
         default="ssf",
         choices=["ssf"],
     )
     parser.add_argument(
         "-f",
         "--force",
-        help="若输出文件（夹）名称已被占用，强制删除",
+        help=_("Delete if output path already exist"),
         action="store_true",
     )
     parser.set_defaults(func=unpack)
@@ -42,39 +36,39 @@ def add_parser_unpack(subparsers: argparse._SubParsersAction):
 
 def unpack(args):
     if args.dest == None:
-        args.dest = os.path.splitext(args.src)[0]
+        args.dest = args.src.with_suffix("")
 
-    if not os.path.exists(args.src):
-        sys.stderr.write("输入 %s 不存在\n" % args.src)
+    if not args.src.exists():
+        sys.stderr.write(_("Input path %s not exist\n") % args.src)
         return 1
-    if not os.path.isfile(args.src):
-        sys.stderr.write("输入 %s 不是文件\n" % args.src)
+    if not args.src.is_file():
+        sys.stderr.write(_("Input path %s is not file\n") % args.src)
         return 1
-    if os.path.exists(args.dest):
+    if args.dest.exists():
         if args.force:
-            if os.path.isdir(args.dest):
+            if args.dest.is_dir():
                 shutil.rmtree(args.dest)
             else:
-                os.remove(args.dest)
+                args.dest.unlink()
         else:
-            sys.stderr.write("输出文件（夹） %s 已存在\n" % args.dest)
+            sys.stderr.write(_("Output path  %s already exist\n") % args.dest)
             return 1
     else:
-        os.mkdir(args.dest)
+        args.dest.mkdir()
 
     return extract_ssf(args.src, args.dest)
 
 
 def add_parser_convert(subparsers: argparse._SubParsersAction):
-    parser = subparsers.add_parser("convert", help="皮肤文件转换")
-    parser.add_argument("src", help="输入文件夹")
+    parser = subparsers.add_parser("convert", help=_("Convert skin file"))
+    parser.add_argument("src", type=Path, help=_("Input folder"))
     # parser.add_argument(
     #     "dest", help="输出文件夹，默认与输入文件夹相同", nargs="?", default=None
     # )
     parser.add_argument(
         "-t",
         "--type",
-        help="输出文件（夹）格式，默认 fcitx5",
+        help=_("Output skin type"),
         default="fcitx5",
         choices=["fcitx", "fcitx5"],
     )
@@ -84,28 +78,28 @@ def add_parser_convert(subparsers: argparse._SubParsersAction):
     parser.add_argument(
         "-i",
         "--install",
-        help="将转换结果移动到该格式皮肤的默认位置",
+        help=_("Install the convert result to it's default install location"),
         action="store_true",
     )
     parser.set_defaults(func=conv)
 
 
 def conv(args):
-    if not os.path.exists(args.src):
-        sys.stderr.write("输入文件（夹） %s 不存在\n" % args.src)
+    if not args.src.exists():
+        sys.stderr.write(_("Input path %s not exist\n") % args.src)
         return 1
-    if not os.path.isdir(args.src):
-        sys.stderr.write("%s 不是文件夹 \n" % args.src)
+    if not args.src.is_dir():
+        sys.stderr.write(_("Input path %s is not folder\n") % args.src)
         return 1
 
     args.dest = args.src
-    if os.path.exists(args.dest):
+    if args.dest.exists():
         # if not args.force:
         #     sys.stderr.write("输出文件（夹） %s 已存在\n" % args.dest)
         # return 1
         pass
     else:
-        os.mkdir(args.dest)
+        args.dest.mkdir()
 
     err = convert(args)
     exit(err)
@@ -114,7 +108,7 @@ def conv(args):
 def main():
     parser = argparse.ArgumentParser(prog="ssfconv")
     # parser.add_argument("--foo", action="store_true", help="foo help")
-    subparsers = parser.add_subparsers(help="可用子命令")
+    subparsers = parser.add_subparsers()
 
     add_parser_unpack(subparsers)
     add_parser_convert(subparsers)
